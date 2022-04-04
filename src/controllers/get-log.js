@@ -3,6 +3,11 @@ export default function makeGetLogController({ getLog }) {
         try {
             const log = await getLog({
               userid: httpRequest.params._id,
+              filter: {
+                from: httpRequest.query.from,
+                to: httpRequest.query.to,
+                limit: httpRequest.query.limit
+              }
             })
             return {
                 body: {

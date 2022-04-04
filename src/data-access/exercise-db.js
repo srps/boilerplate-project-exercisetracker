@@ -7,7 +7,7 @@ export default function makeExerciseDb({ ExerciseDb }) {
 
   async function findById({ id }) {
     try {
-      const exercise = await ExerciseDb.findById(id).exec();
+      const exercise = await ExerciseDb.findById(id).select('-__v').exec();
       if (!exercise) { return null }
       return exercise
     } catch (err) {
@@ -15,9 +15,15 @@ export default function makeExerciseDb({ ExerciseDb }) {
     }
   }
 
-  async function findByUserId({ userid }) {
+  async function findByUserId({ userid, filter }) {
     try {
-      const exercises = await ExerciseDb.find({ userid }).exec();
+      const dateFrom = new Date( filter.from ? filter.from : 0 )
+      const dateTo = new Date( filter.to ? filter.to : Date.now() )
+      const exercises = await ExerciseDb.find({ userid })
+        .where('date').gte(dateFrom).lte(dateTo)
+        .limit(filter.limit)
+        .select('-__v')
+        .exec();
       if (!exercises) { return null }
       return exercises
     } catch (err) {
